@@ -37,7 +37,7 @@ export async function deleteEmployee(id: string) {
 }
 
 export async function getEmployeesByDepartment(department?: string) {
-  if (!department) {
+  if (!department || department === "All") {
     return db.query.users.findMany({
       orderBy: (users, { asc }) => [asc(users.name)],
     });
@@ -48,6 +48,7 @@ export async function getEmployeesByDepartment(department?: string) {
     orderBy: (users, { asc }) => [asc(users.name)],
   });
 }
+
 export async function getTotalEmployees() {
   const employees = await db.query.users.findMany();
   return employees.length;

@@ -27,7 +27,7 @@ export function EmployeeStats() {
   }, [totalEmployees]);
 
   return (
-    <Card>
+    <Card >
       <CardHeader>
         <CardTitle>Total Employees</CardTitle>
       </CardHeader>

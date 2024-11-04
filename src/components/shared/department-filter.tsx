@@ -16,19 +16,18 @@ export function DepartmentFilter() {
   const searchParams = useSearchParams();
   const currentDepartment = searchParams.get("department") || "All";
 
+  const handleDepartmentChange = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (value === "All") {
+      params.delete("department");
+    } else {
+      params.set("department", value);
+    }
+    router.push(`/company?${params.toString()}`);
+  };
+
   return (
-    <Select
-      value={currentDepartment}
-      onValueChange={(value) => {
-        const params = new URLSearchParams(searchParams);
-        if (value === "All") {
-          params.delete("department");
-        } else {
-          params.set("department", value);
-        }
-        router.push(`/company?${params.toString()}`);
-      }}
-    >
+    <Select value={currentDepartment} onValueChange={handleDepartmentChange}>
       <SelectTrigger>
         <SelectValue placeholder="Select department" />
       </SelectTrigger>

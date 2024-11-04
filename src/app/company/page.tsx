@@ -9,9 +9,10 @@ import db from "../../../db/drizzle";
 import { events } from "../../../db/schema";
 import { desc } from "drizzle-orm";
 
-async function getData() {
-  const employees = await getEmployeesByDepartment();
+async function getData(department: string | undefined) {
+  const employees = await getEmployeesByDepartment(department);
   const eventList = await db.select().from(events).orderBy(desc(events.startDate));
+  
   return { 
     employees, 
     eventList: eventList.map(event => ({
@@ -25,8 +26,16 @@ async function getData() {
   };
 }
 
-export default async function DashboardPage() {
-  const { employees, eventList } = await getData();
+interface PageProps {
+  searchParams: Promise<{ department?: string }>;
+}
+
+export default async function DashboardPage({ searchParams }: PageProps) {
+  // Await the searchParams
+  const params = await searchParams;
+  const department = params.department;
+  
+  const { employees, eventList } = await getData(department);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -51,7 +60,7 @@ export default async function DashboardPage() {
               </Suspense>
 
               <Suspense fallback={<div>Loading events...</div>}>
-                <EventCalendar events={eventList } />
+                <EventCalendar events={eventList} />
               </Suspense>
             </div>
           </div>

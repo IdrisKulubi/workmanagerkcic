@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/shared/navbar";
 import Link from "next/link";
+import { Footer } from "@/components/shared/footer";
 
 export default function Home() {
   return (
@@ -22,9 +23,13 @@ export default function Home() {
                   management system.
                 </p>
               </div>
-              <div>
+              <div className="flex gap-4">
                 <Link href="/company">
                   <Button size="lg">Company Details</Button>
+                </Link>
+              
+                <Link href="/analytics">
+                  <Button size="lg">Company Analytics</Button>
                 </Link>
               </div>
             </div>
@@ -56,6 +61,7 @@ export default function Home() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }
