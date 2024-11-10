@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { addEvent } from "@/lib/actions/events-actions";
+import { useToast } from "@/hooks/use-toast";
 
 const eventSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -48,14 +49,32 @@ export function AddEventDialog() {
       endTime: "",
     },
   });
-
+  const { toast } = useToast();
   async function onSubmit(data: z.infer<typeof eventSchema>) {
     try {
-      await addEvent(data);
-      setOpen(false);
-      form.reset();
+      const result = await addEvent(data);
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: result.message,
+          variant: "default",
+        });
+        setOpen(false);
+        form.reset();
+      } else {
+        toast({
+          title: "Error",
+          description: result.error,
+          variant: "destructive",
+        });
+      }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error("Failed to add event:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
     }
   }
 

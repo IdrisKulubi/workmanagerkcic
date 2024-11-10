@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
@@ -8,15 +9,40 @@ import { useAuth } from "@/components/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import { deleteEvent } from "@/lib/actions/events-actions";
 import { Event } from "@/types/events";
+import { useToast } from "@/hooks/use-toast";
 
 
 export function EventList({ events }: { events: Event[] }) {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("active");
-
+  const { toast } = useToast();
   const activeEvents = events.filter((event) => event.status === "active");
   const pastEvents = events.filter((event) => event.status === "past");
 
+  async function handleDeleteEvent(id: string) {
+    try {
+      const result = await deleteEvent(id);
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: result.message,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.error,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred while deleting the event.",
+        variant: "destructive",
+      });
+    }
+  }
   return (
     <Card>
       <CardHeader>
@@ -56,7 +82,7 @@ export function EventList({ events }: { events: Event[] }) {
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={() => deleteEvent(event.id)}
+                          onClick={() => handleDeleteEvent(event.id)}
                         >
                           Delete
                         </Button>
