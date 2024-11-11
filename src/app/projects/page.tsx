@@ -21,8 +21,8 @@ export default async function ProjectsPage() {
   const { projects } = await getData();
 
   // Get unique bid managers and directors
-  const bidManagers = [...new Set(projects?.map(p => p.bidManager))];
-//   const bidDirectors = [...new Set(projects?.map(p => p.bidDirector))];
+  const bidManagers = [...new Set(projects?.map((p) => p.bidManager))];
+  //   const bidDirectors = [...new Set(projects?.map(p => p.bidDirector))];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -55,8 +55,12 @@ export default async function ProjectsPage() {
             </Link>
           </div>
           <div className="flex items-center gap-4">
-            <FilterMenu />
-            <SearchBar />
+            <Suspense fallback={<div>Loading filters...</div>}>
+              <FilterMenu />
+            </Suspense>
+            <Suspense fallback={<div>Loading search...</div>}>
+              <SearchBar />
+            </Suspense>
           </div>
         </div>
       </div>

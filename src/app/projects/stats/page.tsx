@@ -19,7 +19,9 @@ export default async function StatsPage() {
         <div className="flex flex-col gap-8">
           <div className="flex flex-col md:flex-row justify-between gap-4">
             <h1 className="text-3xl font-bold">Company Statistics</h1>
-            <CompanyStatsFilters projects={projects ?? []} />
+            <Suspense fallback={<div>Loading...</div>}>
+              <CompanyStatsFilters projects={projects ?? []} />
+            </Suspense>
           </div>
 
           <Suspense
