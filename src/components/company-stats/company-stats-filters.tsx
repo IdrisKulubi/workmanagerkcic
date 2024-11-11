@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/select";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Project } from "../../../db/schema";
+import { Button } from "../ui/button";
+import { ArrowLeft } from "lucide-react";
 
 interface CompanyStatsFiltersProps {
   projects: Project[];
@@ -20,7 +22,9 @@ export function CompanyStatsFilters({ projects }: CompanyStatsFiltersProps) {
 
   // Get unique locations from projects
   const uniqueLocations = [...new Set(projects.map(p => p.location))].sort();
-
+const goBackToProjects = () => {
+  router.push("/projects");
+};
   const handleFilterChange = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams);
     if (value !== "all") {
@@ -33,6 +37,14 @@ export function CompanyStatsFilters({ projects }: CompanyStatsFiltersProps) {
 
   return (
     <div className="flex flex-wrap gap-4">
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={goBackToProjects}
+        className="h-10 w-10"
+      >
+        <ArrowLeft className="h-4 w-4" />
+      </Button>
       <Select
         onValueChange={(value) => handleFilterChange("location", value)}
         defaultValue={searchParams.get("location") || "all"}

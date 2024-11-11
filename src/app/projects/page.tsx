@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SearchBar } from "@/components/shared/search-bar";
 import { BidManagersList } from "@/components/projects/bid-managers-list";
 import { Button } from "@/components/ui/button";
-import { BarChart2 } from "lucide-react";
+import { BarChart2, FileText, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 async function getData() {
@@ -31,16 +31,26 @@ export default async function ProjectsPage() {
         <div className="container flex items-center justify-between py-4">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold">Overview</h1>
-            <span className="text-muted-foreground">|</span>
             <BidManagersList
               bidManagers={bidManagers ?? []}
               projects={projects ?? []}
             />
-            <span className="text-muted-foreground">|</span>
             <Link href="/projects/stats">
               <Button variant="ghost" className="gap-2">
                 <BarChart2 className="h-4 w-4" />
                 Company Stats
+              </Button>
+            </Link>
+            <Link href="/projects/reports">
+              <Button variant="ghost" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Reports
+              </Button>
+            </Link>
+            <Link href="/projects/forecasts">
+              <Button variant="ghost" className="gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Forecasts
               </Button>
             </Link>
           </div>

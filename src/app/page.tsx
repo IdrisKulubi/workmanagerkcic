@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/shared/navbar";
 import Link from "next/link";
 import { Footer } from "@/components/shared/footer";
+import { TrendingUp,  LayoutDashboard, PieChart } from "lucide-react";
 
 export default function Home() {
   return (
@@ -23,14 +24,14 @@ export default function Home() {
                   management system.
                 </p>
               </div>
-              <div className="flex gap-4">
-                <Link href="/company">
-                  <Button size="lg">Company Details</Button>
+              <div className="flex flex-wrap gap-4 justify-center">
+                <Link href="/projects">
+                  <Button size="lg" className="gap-2">
+                    <LayoutDashboard className="h-4 w-4" />
+                    Company Dashboard
+                  </Button>
                 </Link>
-              
-                <Link href="/analytics">
-                  <Button size="lg">Company Analytics</Button>
-                </Link>
+                
               </div>
             </div>
           </div>
@@ -39,22 +40,25 @@ export default function Home() {
         <section className="border-t bg-muted/40 py-12">
           <div className="container px-4 md:px-6">
             <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
-              <div className="flex flex-col items-center space-y-2 rounded-lg p-4">
-                <h2 className="text-xl font-bold">Project Tracking</h2>
+              <div className="flex flex-col items-center space-y-4 rounded-lg p-6 bg-card border shadow-sm">
+                <LayoutDashboard className="h-8 w-8 text-primary" />
+                <h2 className="text-xl font-bold">Project Management</h2>
                 <p className="text-center text-muted-foreground">
-                  Monitor all your consulting projects in real-time
+                  Track and manage all your consulting projects in one place with real-time updates
                 </p>
               </div>
-              <div className="flex flex-col items-center space-y-2 rounded-lg p-4">
-                <h2 className="text-xl font-bold">Team Collaboration</h2>
+              <div className="flex flex-col items-center space-y-4 rounded-lg p-6 bg-card border shadow-sm">
+                <PieChart className="h-8 w-8 text-primary" />
+                <h2 className="text-xl font-bold">Analytics & Insights</h2>
                 <p className="text-center text-muted-foreground">
-                  Work seamlessly with your team members
+                  Get detailed analytics and insights into project performance and team metrics
                 </p>
               </div>
-              <div className="flex flex-col items-center space-y-2 rounded-lg p-4">
-                <h2 className="text-xl font-bold">Detailed Analytics</h2>
+              <div className="flex flex-col items-center space-y-4 rounded-lg p-6 bg-card border shadow-sm">
+                <TrendingUp className="h-8 w-8 text-primary" />
+                <h2 className="text-xl font-bold">Forecasting</h2>
                 <p className="text-center text-muted-foreground">
-                  Get insights into project performance
+                  Make data-driven decisions with advanced forecasting and prediction tools
                 </p>
               </div>
             </div>

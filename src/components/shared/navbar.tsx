@@ -19,12 +19,8 @@ export function Navbar() {
         </div>
 
         <div className="ml-auto flex items-center space-x-4">
-          {!isAuthenticated ? (
+          {!isAuthenticated && (
             <Button onClick={() => setShowSignIn(true)}>Sign In</Button>
-          ) : (
-            <Button variant="outline" onClick={() => setShowSignIn(true)}>
-              Dashboard
-            </Button>
           )}
           <ModeToggle />
         </div>

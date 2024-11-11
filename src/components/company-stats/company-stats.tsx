@@ -181,7 +181,7 @@ export function CompanyStats({ projects }: { projects: Project[] }) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Projects by Donor</CardTitle>
+            <CardTitle>Projects Donors</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[300px]">
