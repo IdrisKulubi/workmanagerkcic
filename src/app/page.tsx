@@ -3,6 +3,8 @@ import { Navbar } from "@/components/shared/navbar";
 import Link from "next/link";
 import { Footer } from "@/components/shared/footer";
 import { TrendingUp,  LayoutDashboard, PieChart } from "lucide-react";
+import { RetroGrid } from "@/components/ui/retro-grid";
+import { TypingAnimation } from "@/components/ui/typing-text";
 
 export default function Home() {
   return (
@@ -16,14 +18,17 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
-                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
-                  Welcome to KCIC Project Manager
-                </h1>
+                <TypingAnimation
+                  text="Welcome to KCIC Project Manager"
+                  className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl"
+                />
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
                   Streamline your consulting projects with our comprehensive
                   management system.
                 </p>
               </div>
+              <RetroGrid />
+
               <div className="flex flex-wrap gap-4 justify-center">
                 <Link href="/projects">
                   <Button size="lg" className="gap-2">
@@ -31,7 +36,6 @@ export default function Home() {
                     Company Dashboard
                   </Button>
                 </Link>
-                
               </div>
             </div>
           </div>
@@ -44,21 +48,23 @@ export default function Home() {
                 <LayoutDashboard className="h-8 w-8 text-primary" />
                 <h2 className="text-xl font-bold">Project Management</h2>
                 <p className="text-center text-muted-foreground">
-                  Track and manage all your consulting projects in one place with real-time updates
+                  Track and manage all your consulting projects in one place
+                  with real-time updates
                 </p>
               </div>
               <div className="flex flex-col items-center space-y-4 rounded-lg p-6 bg-card border shadow-sm">
                 <PieChart className="h-8 w-8 text-primary" />
                 <h2 className="text-xl font-bold">Analytics & Insights</h2>
                 <p className="text-center text-muted-foreground">
-                  Get detailed analytics and insights into project performance and team metrics
+                  Get detailed analytics and insights into project performance
+                  and team metrics
                 </p>
               </div>
               <div className="flex flex-col items-center space-y-4 rounded-lg p-6 bg-card border shadow-sm">
                 <TrendingUp className="h-8 w-8 text-primary" />
                 <h2 className="text-xl font-bold">Forecasting</h2>
                 <p className="text-center text-muted-foreground">
-                  Make data-driven decisions with advanced forecasting and prediction tools
+                  Make data-driven decisions from you data
                 </p>
               </div>
             </div>
