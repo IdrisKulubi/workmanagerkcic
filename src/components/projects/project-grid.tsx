@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Project } from "../../../db/schema";
+import { Project, User } from "../../../db/schema";
 import {
   Card,
   CardHeader,
@@ -13,8 +13,14 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { NoResults } from "./no-results";
 import { ProjectModal } from "./project-modal";
+import { ProjectActions } from "../shared/project-actions-menu";
 
-export function ProjectGrid({ projects }: { projects: Project[] }) {
+interface ProjectGridProps {
+  projects: Project[];
+  currentUser: User | null;
+}
+
+export function ProjectGrid({ projects, currentUser }: ProjectGridProps) {
   const searchParams = useSearchParams();
   const priorityFilter = searchParams.get("priority");
   const statusFilter = searchParams.get("status")?.toLowerCase();
@@ -61,7 +67,7 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
             key={project.id}
             onClick={(e) => handleProjectClick(e, project)}
           >
-            <Card className="hover:shadow-lg transition-shadow h-[180px]">
+            <Card className="hover:shadow-lg transition-shadow h-[180px] relative">
               <CardHeader>
                 <div className="flex items-center justify-between gap-2">
                   <CardTitle className="text-lg truncate">
@@ -103,6 +109,9 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
                     </span>
                   </div>
                 </CardDescription>
+                <div className="absolute top-2 right-2">
+                  <ProjectActions project={project} userRole={currentUser?.role} />
+                </div>
               </CardHeader>
             </Card>
           </Link>

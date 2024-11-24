@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { signIn } from '@/lib/actions/auth'
+import { useAuth } from './auth-provider'
 
 export function SignInModal({ open, onOpenChange }: { 
   open: boolean
@@ -14,6 +15,7 @@ export function SignInModal({ open, onOpenChange }: {
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const router = useRouter()
+  const { setIsAuthenticated, setUser } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,6 +28,8 @@ export function SignInModal({ open, onOpenChange }: {
       return
     }
 
+    setIsAuthenticated(true)
+    setUser(result.user ?? null)
     onOpenChange(false)
     router.refresh()
   }
@@ -51,5 +55,5 @@ export function SignInModal({ open, onOpenChange }: {
         </form>
       </DialogContent>
     </Dialog>
-    )
+  )
 } 

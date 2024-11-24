@@ -2,6 +2,10 @@
 
 import db from "../../../db/drizzle";
 import { projects } from "../../../db/schema";
+import { getCurrentUser } from "@/lib/auth";
+import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import type { NewProject } from "../../../db/schema";
 
 export async function getAllProjects() {
   try {
@@ -18,6 +22,114 @@ export async function getAllProjects() {
     console.error("Error fetching projects:", error);
     return {
       error: "Failed to fetch projects. Please try again later.",
+      success: false,
+    };
+  }
+}
+
+export async function deleteProject(id: string) {
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser || (currentUser.role !== "admin" && currentUser.role !== "manager")) {
+      return {
+        error: "Unauthorized: Only admins and managers can delete projects",
+        success: false,
+      };
+    }
+
+    await db.delete(projects).where(eq(projects.id, id));
+    revalidatePath("/projects");
+    
+    return {
+      success: true,
+      message: "Project deleted successfully",
+    };
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    return {
+      error: "Failed to delete project",
+      success: false,
+    };
+  }
+}
+
+export async function addProject(data: NewProject) {
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser || (currentUser.role !== "admin" && currentUser.role !== "manager")) {
+      return {
+        error: "Unauthorized: Only admins and managers can add projects",
+        success: false,
+      };
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _, ...projectData } = data;
+    await db.insert(projects).values({
+      id: `proj_${Date.now()}`,
+      ...projectData,
+    });
+
+    revalidatePath("/projects");
+    return {
+      success: true,
+      message: "Project created successfully! Redirecting...",
+    };
+  } catch (error) {
+    console.error("Error adding project:", error);
+    return {
+      error: "Failed to add project. Please try again later.",
+      success: false,
+    };
+  }
+}
+
+export async function getProjectById(id: string) {
+  try {
+    const project = await db.query.projects.findFirst({
+      where: eq(projects.id, id),
+    });
+
+    return {
+      success: true,
+      data: project,
+    };
+  } catch (error) {
+    console.error("Error fetching project:", error);
+    return {
+      error: "Failed to fetch project",
+      success: false,
+    };
+  }
+}
+
+export async function updateProject(id: string, data: Partial<NewProject>) {
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser || (currentUser.role !== "admin" && currentUser.role !== "manager")) {
+      return {
+        error: "Unauthorized: Only admins and managers can update projects",
+        success: false,
+      };
+    }
+
+    await db
+      .update(projects)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(projects.id, id));
+
+    revalidatePath("/projects");
+    return {
+      success: true,
+      message: "Project updated successfully! Redirecting...",
+    };
+  } catch (error) {
+    console.error("Error updating project:", error);
+    return {
+      error: "Failed to update project",
       success: false,
     };
   }

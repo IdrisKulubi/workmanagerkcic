@@ -7,8 +7,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SearchBar } from "@/components/shared/search-bar";
 import { BidManagersList } from "@/components/projects/bid-managers-list";
 import { Button } from "@/components/ui/button";
-import { BarChart2, FileText, TrendingUp } from "lucide-react";
+import { BarChart2, FileText, TrendingUp, Plus } from "lucide-react";
 import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth";
 
 async function getData() {
   const projectsResponse = await getAllProjects();
@@ -19,6 +20,8 @@ async function getData() {
 
 export default async function ProjectsPage() {
   const { projects } = await getData();
+  const currentUser = await getCurrentUser();
+ 
 
   // Get unique bid managers and directors
   const bidManagers = [...new Set(projects?.map((p) => p.bidManager))];
@@ -66,6 +69,16 @@ export default async function ProjectsPage() {
       </div>
 
       <div className="container py-8">
+        <div className="flex justify-between items-center mb-6">
+          {(currentUser?.role === "admin" || currentUser?.role === "manager") && (
+            <Link href="/projects/new">
+              <Button className="gap-2 bg-primary">
+                <Plus className="h-4 w-4" />
+                New Project
+              </Button>
+            </Link>
+          )}
+        </div>
         <Suspense
           fallback={
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -75,7 +88,7 @@ export default async function ProjectsPage() {
             </div>
           }
         >
-          <ProjectGrid projects={projects ?? []} />
+          <ProjectGrid projects={projects ?? []} currentUser={currentUser ?? null} />
         </Suspense>
       </div>
     </div>
