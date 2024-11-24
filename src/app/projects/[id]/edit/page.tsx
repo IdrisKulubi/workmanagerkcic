@@ -3,14 +3,21 @@ import { Navbar } from "@/components/shared/navbar";
 import { getCurrentUser } from "@/lib/auth";
 import { getProjectById } from "@/lib/actions/project-actions";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
 
-export default async function EditProjectPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export const metadata: Metadata = {
+  title: "Edit Project",
+  description: "Edit project details",
+};
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function EditProjectPage({ params }: PageProps) {
+  const resolvedParams = await params;
   const user = await getCurrentUser();
-  const { data: project } = await getProjectById(params.id);
+  const { data: project } = await getProjectById(resolvedParams.id);
 
   if (!user || (user.role !== "admin" && user.role !== "manager")) {
     redirect("/projects");
