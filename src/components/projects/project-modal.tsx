@@ -10,16 +10,13 @@ import { Project } from "../../../db/schema";
 import { Badge } from "@/components/ui/badge";
 
 interface ProjectModalProps {
-  project: Project;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  project: Project | null;
+  onClose: () => void;
 }
 
-export function ProjectModal({
-  project,
-  open,
-  onOpenChange,
-}: ProjectModalProps) {
+export function ProjectModal({ project, onClose }: ProjectModalProps) {
+  if (!project) return null;
+
   const getStatusEmoji = (status: string) => {
     if (status.toLowerCase() === "won") {
       return <span className="animate-bounce inline-block">🎉</span>;
@@ -31,7 +28,7 @@ export function ProjectModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <div className="flex items-center justify-between gap-4">
