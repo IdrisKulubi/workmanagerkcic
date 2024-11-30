@@ -70,3 +70,8 @@ export const projectSchema = z.object({
 export type ProjectFormValues = z.infer<typeof projectSchema>;
 export type ProjectStatus = (typeof ProjectStatus)[number];
 export type Department = (typeof Departments)[number];
+
+export const signInSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});

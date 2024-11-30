@@ -3,35 +3,38 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { signIn } from '@/lib/actions/auth'
 import { useAuth } from './auth-provider'
+import { SignInForm } from './sign-in-form'
 
 export function SignInModal({ open, onOpenChange }: { 
   open: boolean
   onOpenChange: (open: boolean) => void 
 }) {
-  const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const router = useRouter()
   const { setIsAuthenticated, setUser } = useAuth()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
+  const handleSubmit = async (data: { email: string; password: string }) => {
+    try {
+      setError('')
+      const result = await signIn({ email: data.email, password: data.password })
+      
+      if (!result.success) {
+        setError(result.error || 'An error occurred during sign in')
+        return
+      }
 
-    const result = await signIn(email)
-    
-    if (!result.success) {
-      setError(result.error || 'An error occurred during sign in')
-      return
+      setIsAuthenticated(true)
+      if ('user' in result) {
+        setUser(result.user)
+      }
+      onOpenChange(false)
+      router.refresh()
+    } catch (error) {
+      setError('An unexpected error occurred')
+      console.error('Sign in error:', error)
     }
-
-    setIsAuthenticated(true)
-    setUser(result.user ?? null)
-    onOpenChange(false)
-    router.refresh()
   }
 
   return (
@@ -40,19 +43,8 @@ export function SignInModal({ open, onOpenChange }: {
         <DialogHeader>
           <DialogTitle>Sign in to KCIC Project Manager</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Input
-              type="email"
-              placeholder="name@kcicconsulting.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          {error && <p className="text-sm text-red-500">{error}</p>}
-          <Button type="submit" className="w-full">Sign In</Button>
-        </form>
+        <SignInForm onSubmit={handleSubmit} />
+        {error && <p className="text-sm text-destructive mt-2">{error}</p>}
       </DialogContent>
     </Dialog>
   )

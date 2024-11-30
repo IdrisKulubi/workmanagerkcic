@@ -8,6 +8,34 @@
       "when": 1731269668970,
       "tag": "0000_bouncy_iron_fist",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1732988126783,
+      "tag": "0001_free_whistler",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1732988398575,
+      "tag": "0002_quiet_red_ghost",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1732988487351,
+      "tag": "0003_quick_scourge",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1732988525295,
+      "tag": "0004_open_nightcrawler",
+      "breakpoints": true
     }
   ]
 }

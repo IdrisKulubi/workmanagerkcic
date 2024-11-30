@@ -22,6 +22,7 @@ import { deleteProject } from "@/lib/actions/project-actions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ProjectModal } from "@/components/projects/project-modal";
+import { motion } from "framer-motion";
 
 interface ProjectsTableProps {
   projects: Project[];
@@ -71,8 +72,13 @@ export function ProjectsTable({ projects, currentUser }: ProjectsTableProps) {
           </TableHeader>
           <TableBody>
             {projects.map((project) => (
-              <TableRow 
+              <motion.tr
                 key={project.id}
+                whileHover={{ 
+                  scale: 1.01,
+                  backgroundColor: "rgba(0,0,0,0.02)",
+                  transition: { duration: 0.2 }
+                }}
                 className="cursor-pointer hover:bg-muted/50"
                 onClick={(e) => handleRowClick(e, project)}
               >
@@ -128,7 +134,7 @@ export function ProjectsTable({ projects, currentUser }: ProjectsTableProps) {
                     </DropdownMenu>
                   )}
                 </TableCell>
-              </TableRow>
+              </motion.tr>
             ))}
           </TableBody>
         </Table>

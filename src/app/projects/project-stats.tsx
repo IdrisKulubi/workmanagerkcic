@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { ProjectModal } from "@/components/projects/project-modal";
 import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
 
 interface ProjectStatsProps {
   projects: Project[];
@@ -49,28 +50,47 @@ export function ProjectStats({ projects }: ProjectStatsProps) {
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 5);
 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
     <>
       <div className="space-y-6">
         <div className="grid gap-4 grid-cols-2">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{successRate.toFixed(1)}%</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ${totalBudget.toLocaleString()}
-              </div>
-            </CardContent>
-          </Card>
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 0.5, delay: 0 }}
+          >
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{successRate.toFixed(1)}%</div>
+              </CardContent>
+            </Card>
+          </motion.div>
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  ${totalBudget.toLocaleString()}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
 
         <Card>

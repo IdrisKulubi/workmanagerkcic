@@ -1,0 +1,1 @@
+ALTER TABLE "users" ALTER COLUMN "password_last_changed" SET NOT NULL;
