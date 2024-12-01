@@ -58,10 +58,23 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 export async function verifyPassword(
-  password: string,
+  plainPassword: string,
   hashedPassword: string
 ): Promise<boolean> {
-  return compare(password, hashedPassword);
+  try {
+    // Add logging to debug
+    console.log("Verifying password...");
+    console.log("Plain password length:", plainPassword.length);
+    console.log("Hashed password length:", hashedPassword.length);
+    
+    const isValid = await compare(plainPassword, hashedPassword);
+    console.log("Password verification result:", isValid);
+    
+    return isValid;
+  } catch (error) {
+    console.error("Error verifying password:", error);
+    return false;
+  }
 }
 
 export function isPasswordExpired(lastChanged: Date): boolean {

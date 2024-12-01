@@ -1,42 +1,36 @@
-import { createHash } from 'crypto'
+'use server'
+
+import { cookies } from 'next/headers'
 import { eq } from 'drizzle-orm'
 import { users } from '../../db/schema'
 import db from '../../db/drizzle'
-import { cookies } from 'next/headers'
-
-export async function validateEmail(email: string) {
-  if (!email.endsWith('@kcicconsulting.com')) {
-    return { success: false, error: 'Invalid email domain' }
-  }
-
-  const user = await db.query.users.findFirst({
-    where: eq(users.email, email),
-  })
-
-  if (!user) {
-    return { success: false, error: 'User not found' }
-  }
-
-  const sessionToken = createHash('sha256')
-    .update(email + Date.now().toString())
-    .digest('hex')
-
-  ;(await cookies()).set('session', sessionToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7, // 1 week
-  })
-
-  return { success: true, user }
-}
 
 export async function getCurrentUser() {
-  const user = await db.query.users.findFirst()
-  return user
+  try {
+    const cookieStore = cookies();
+    const sessionCookie = (await cookieStore).get('session');
+    
+    if (!sessionCookie?.value) return null;
+    
+    const sessionData = JSON.parse(sessionCookie.value);
+    
+    const user = await db.query.users.findFirst({
+      where: eq(users.email, sessionData.email),
+    });
+    
+    if (!user) {
+      (await cookieStore).delete('session');
+      return null;
+    }
+
+    return user;
+  } catch (error) {
+    console.error('Error getting current user:', error);
+    return null;
+  }
 }
 
 export async function signOut() {
-  // This will now be called from the API route
-  (await cookies()).delete('session')
+  const cookieStore = cookies();
+  (await cookieStore).delete('session');
 } 

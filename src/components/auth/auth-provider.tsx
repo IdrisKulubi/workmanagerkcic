@@ -1,46 +1,103 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import {  usePathname } from "next/navigation";
 import { SignInModal } from "./sign-in-modal";
 import { User } from "../../../db/schema";
-import { getAuthenticatedUser } from "@/lib/user-utils";
 
-type AuthContextType = {
+interface AuthContextType {
   isAuthenticated: boolean;
+  user: User | null;
   showSignIn: boolean;
   setShowSignIn: (show: boolean) => void;
-  user: User | null;
-  setIsAuthenticated: (value: boolean) => void;
+  setIsAuthenticated: (auth: boolean) => void;
   setUser: (user: User | null) => void;
-};
+}
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType>({
+  isAuthenticated: false,
+  user: null,
+  showSignIn: false,
+  setShowSignIn: () => {},
+  setIsAuthenticated: () => {},
+  setUser: () => {},
+});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showSignIn, setShowSignIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const user = await getAuthenticatedUser();
-      if (user) {
+  // Function to check auth status
+  const checkAuth = useCallback(async () => {
+    try {
+      const response = await fetch('/api/auth/check', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
+      if (!response.ok) throw new Error('Auth check failed');
+
+      const data = await response.json();
+      
+      if (data.authenticated && data.user) {
         setIsAuthenticated(true);
-        setUser(user);
+        setUser(data.user);
+        setShowSignIn(false);
+      } else {
+        setIsAuthenticated(false);
+        setUser(null);
+        // Only show sign in for protected routes
+        if (!isPublicRoute(pathname)) {
+          setShowSignIn(true);
+        }
       }
-    };
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      setIsAuthenticated(false);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [pathname, setIsAuthenticated, setUser, setShowSignIn]);
+
+  // Check auth on mount and route changes
+  useEffect(() => {
     checkAuth();
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  // Periodic auth check
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const interval = setInterval(checkAuth, 30000); // Check every 30 seconds
+    return () => clearInterval(interval);
+  }, [checkAuth, isAuthenticated]);
+
+  const isPublicRoute = (path: string) => {
+    return ['/', '/auth/signin', '/auth/signup'].includes(path);
+  };
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated,
+        user,
         showSignIn,
         setShowSignIn,
-        user,
         setIsAuthenticated,
-        setUser
+        setUser,
       }}
     >
       {children}

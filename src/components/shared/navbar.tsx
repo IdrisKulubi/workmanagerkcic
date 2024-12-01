@@ -12,9 +12,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut } from "lucide-react";
-import { signOut } from "@/lib/actions/auth";
+import { User, LogOut, Settings, LayoutDashboard } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { signOut } from "@/lib/auth";
 
 export function Navbar() {
   const { isAuthenticated, setShowSignIn, setIsAuthenticated, setUser, user } = useAuth();
@@ -52,9 +52,20 @@ export function Navbar() {
                   <p className="text-xs text-muted-foreground">{user?.email}</p>
                 </div>
                 <DropdownMenuSeparator />
+                {user?.role?.toLowerCase() === "admin" && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin" className="cursor-pointer">
+                        <LayoutDashboard className="mr-2 h-4 w-4 text-blue-600" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem asChild>
                   <Link href="/profile" className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
+                    <Settings className="mr-2 h-4 w-4" />
                     Profile
                   </Link>
                 </DropdownMenuItem>

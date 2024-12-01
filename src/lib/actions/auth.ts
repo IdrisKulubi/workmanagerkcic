@@ -1,10 +1,10 @@
 'use server'
 
-import { validateEmail, signOut as authSignOut, getCurrentUser } from '@/lib/auth'
+import { cookies } from 'next/headers'
 import { eq } from 'drizzle-orm'
 import { users } from '../../../db/schema'
-import { hashPassword, verifyPassword, isPasswordExpired } from '@/lib/password-utils'
-import db from '../../../db/drizzle';
+import { verifyPassword } from '@/lib/password-utils'
+import db from '../../../db/drizzle'
 
 export async function signIn({ email, password }: { email: string; password: string }) {
   try {
@@ -16,71 +16,44 @@ export async function signIn({ email, password }: { email: string; password: str
       return { success: false, error: 'Invalid credentials' }
     }
 
-    // Check if it's first time login (no password set)
-    if (!user.password) {
-      // Create their first password
-      const hashedPassword = await hashPassword(password)
-      await db.update(users)
-        .set({ 
-          password: hashedPassword,
-          passwordLastChanged: new Date(),
-        })
-        .where(eq(users.id, user.id))
-      
-      const result = await validateEmail(email)
-      return result
-    }
-
-    // Normal login flow
-    const isValidPassword = await verifyPassword(password, user.password)
-    if (!isValidPassword) {
+    const isValid = await verifyPassword(password, user.password);
+    if (!isValid) {
       return { success: false, error: 'Invalid credentials' }
     }
 
-    if (isPasswordExpired(user.passwordLastChanged)) {
-      return { success: false, error: 'Password expired. Please reset your password.' }
-    }
+    // Create a session token
+    const sessionData = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      name: user.name,
+      department: user.department,
+      exp: Date.now() + 1000 * 60 * 60 * 24 * 7 // 7 days
+    };
 
-    const result = await validateEmail(email)
-    return result
+    // Set the session cookie
+    (await
+      // Set the session cookie
+      cookies()).set('session', JSON.stringify(sessionData), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
+      path: '/',
+    });
+
+    return { 
+      success: true, 
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        name: user.name,
+        department: user.department
+      }
+    };
   } catch (error) {
-    return { success: false, error: (error as Error).message }
-  }
-}
-
-export async function signOut() {
-  await authSignOut()
-}
-
-
-
-export async function updatePassword(data: { 
-  currentPassword: string; 
-  newPassword: string; 
-}) {
-  try {
-    const user = await getCurrentUser();
-    if (!user) {
-      return { success: false, error: "Not authenticated" };
-    }
-
-    const isValid = await verifyPassword(data.currentPassword, user.password);
-    if (!isValid) {
-      return { success: false, error: "Current password is incorrect" };
-    }
-
-    const hashedPassword = await hashPassword(data.newPassword);
-    await db
-      .update(users)
-      .set({ 
-        password: hashedPassword,
-        passwordLastChanged: new Date(),
-      })
-      .where(eq(users.id, user.id));
-
-    return { success: true };
-  } catch (error) {
-    console.error("Error updating password:", error);
-    return { success: false, error: "Failed to update password" };
+    console.error("Sign in error:", error);
+    return { success: false, error: 'An error occurred during sign in' }
   }
 } 
