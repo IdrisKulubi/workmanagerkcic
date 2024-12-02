@@ -95,7 +95,7 @@ export function ProjectStats({ projects }: ProjectStatsProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Project Status Distribution</CardTitle>
+            <CardTitle>Bd Status Distribution</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[200px]">
@@ -124,7 +124,7 @@ export function ProjectStats({ projects }: ProjectStatsProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent Projects</CardTitle>
+            <CardTitle>Recent Bd</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Project } from "../../../db/schema";
+import { getProjectStyle, ProjectStatusIndicator } from "@/components/projects/project-status-styles";
 
 export function ProjectList({ projects }: { projects: Project[] }) {
   const [sortField, setSortField] = useState<keyof Project>("projectName");
@@ -39,12 +40,12 @@ export function ProjectList({ projects }: { projects: Project[] }) {
     <div className="rounded-md border">
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="hover:bg-transparent">
             <TableHead
               onClick={() => handleSort("projectName")}
               className="cursor-pointer"
             >
-              Project Name
+              Bd Name
             </TableHead>
             <TableHead
               onClick={() => handleSort("bdNumber")}
@@ -85,19 +86,27 @@ export function ProjectList({ projects }: { projects: Project[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedProjects.map((project) => (
-            <TableRow key={project.id}>
-              <TableCell>{project.projectName}</TableCell>
-              <TableCell>{project.bdNumber}</TableCell>
-              <TableCell>{project.priority}</TableCell>
-              <TableCell>{project.department}</TableCell>
-              <TableCell>{project.bidDirector}</TableCell>
-              <TableCell>{project.status}</TableCell>
-              <TableCell>
-                {project.bidsDeadline ? new Date(project.bidsDeadline).toLocaleDateString() : null}
-              </TableCell>
-            </TableRow>
-          ))}
+          {sortedProjects.map((project) => {
+            const style = getProjectStyle(project);
+            return (
+              <TableRow 
+                key={project.id}
+                className={style.row}
+              >
+                <TableCell>{project.projectName}</TableCell>
+                <TableCell>{project.bdNumber}</TableCell>
+                <TableCell>{project.priority}</TableCell>
+                <TableCell>{project.department}</TableCell>
+                <TableCell>{project.bidDirector}</TableCell>
+                <TableCell>
+                  <ProjectStatusIndicator project={project} />
+                </TableCell>
+                <TableCell>
+                  {project.bidsDeadline ? new Date(project.bidsDeadline).toLocaleDateString() : null}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>

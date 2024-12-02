@@ -57,20 +57,20 @@ export function ForecastsList({ projects }: { projects: Project[] }) {
               ${totalPotentialValue.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">
-              If all pending projects are won
+              If all pending Bds are won
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-medium">
-              Pending Projects
+              Pending Bds
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{pendingProjects.length}</div>
             <p className="text-xs text-muted-foreground">
-              Total projects in pipeline
+              Total Bds in pipeline
             </p>
           </CardContent>
         </Card>
@@ -85,7 +85,7 @@ export function ForecastsList({ projects }: { projects: Project[] }) {
               $
               {(totalPotentialValue / pendingProjects.length || 0).toLocaleString()}
             </div>
-            <p className="text-xs text-muted-foreground">Per project</p>
+            <p className="text-xs text-muted-foreground">Per Bd</p>
           </CardContent>
         </Card>
       </div>
@@ -113,7 +113,7 @@ export function ForecastsList({ projects }: { projects: Project[] }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Pending Projects</CardTitle>
+          <CardTitle>Pending Bds</CardTitle>
         </CardHeader>
         <CardContent>
           <DataTable columns={columns} data={pendingProjects} />

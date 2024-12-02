@@ -37,7 +37,7 @@ export function ReportsList({ projects }: { projects: Project[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Project Reports</CardTitle>
+        <CardTitle>Bds Reports</CardTitle>
       </CardHeader>
       <CardContent>
         <DataTable columns={columns} data={filteredProjects} />

@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 interface ProjectModalProps {
   project: Project | null;
   onClose: () => void;
+  
 }
 
 export function ProjectModal({ project, onClose }: ProjectModalProps) {

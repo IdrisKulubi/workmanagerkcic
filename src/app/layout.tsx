@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/themes/theme-provider";
 import { AuthProvider } from "@/components/auth/auth-provider";
+import { NotificationsProvider } from "@/lib/notifications/notifications-context";
 import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
@@ -17,8 +18,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "KCIC Project Manager",
-  description: "Project management system for KCIC Consulting",
+  title: "KCIC Bd Manager",
+  description: "Bd management system for KCIC Consulting",
 };
 
 export default function RootLayout({
@@ -38,8 +39,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            {children}
-            <Toaster />
+            <NotificationsProvider>
+              {children}
+              <Toaster />
+            </NotificationsProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

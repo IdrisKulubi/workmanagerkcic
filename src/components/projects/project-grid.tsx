@@ -73,18 +73,24 @@ export function ProjectGrid({ projects, currentUser }: ProjectGridProps) {
                   <CardTitle className="text-lg truncate">
                     {project.projectName}
                   </CardTitle>
-                  <Badge
-                    variant={
-                      project.priority === "A"
-                        ? "success"
-                        : project.priority === "B"
-                        ? "warning"
-                        : "info"
-                    }
-                    className="shrink-0"
-                  >
-                    {project.priority}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant={
+                        project.priority === "A"
+                          ? "success"
+                          : project.priority === "B"
+                          ? "warning"
+                          : "info"
+                      }
+                      className="shrink-0"
+                    >
+                      {project.priority}
+                    </Badge>
+                    <ProjectActions 
+                      project={project} 
+                      userRole={currentUser?.role}
+                    />
+                  </div>
                 </div>
                 <CardDescription className="space-y-2 mt-4">
                   <div className="flex justify-between text-sm">
@@ -109,9 +115,6 @@ export function ProjectGrid({ projects, currentUser }: ProjectGridProps) {
                     </span>
                   </div>
                 </CardDescription>
-                <div className="absolute top-2 right-2">
-                  <ProjectActions project={project} userRole={currentUser?.role} />
-                </div>
               </CardHeader>
             </Card>
           </Link>
@@ -121,8 +124,7 @@ export function ProjectGrid({ projects, currentUser }: ProjectGridProps) {
       {selectedProject && (
         <ProjectModal
           project={selectedProject}
-          open={!!selectedProject}
-          onOpenChange={(open) => !open && setSelectedProject(null)}
+          onClose={() => setSelectedProject(null)}
         />
       )}
     </>

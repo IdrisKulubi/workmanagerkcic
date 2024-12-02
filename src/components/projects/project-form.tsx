@@ -120,7 +120,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
             name="projectName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Project Name</FormLabel>
+                <FormLabel>Bd Name</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

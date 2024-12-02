@@ -6,8 +6,8 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Edit Project",
-  description: "Edit project details",
+  title: "Edit Bd",
+  description: "Edit bd details",
 };
 
 interface PageProps {

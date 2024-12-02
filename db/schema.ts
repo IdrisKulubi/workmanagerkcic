@@ -66,6 +66,7 @@ export const projects = pgTable("projects", {
   projectEndDate: date("project_end_date"),
   probation: boolean("probation").default(false),
   adjusted: boolean("adjusted").default(false),
+  isLive: boolean("is_live").default(false),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

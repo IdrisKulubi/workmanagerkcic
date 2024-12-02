@@ -134,3 +134,54 @@ export async function updateProject(id: string, data: Partial<NewProject>) {
     };
   }
 }
+
+export async function toggleProjectLive(id: string) {
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser || (currentUser.role !== "admin" && currentUser.role !== "manager")) {
+      return {
+        error: "Unauthorized: Only admins and managers can update project status",
+        success: false,
+      };
+    }
+
+    const project = await db.query.projects.findFirst({
+      where: eq(projects.id, id),
+    });
+
+    if (!project) {
+      return {
+        error: "Project not found",
+        success: false,
+      };
+    }
+
+    await db
+      .update(projects)
+      .set({ 
+        isLive: !project.isLive,
+        updatedAt: new Date(),
+      })
+      .where(eq(projects.id, id));
+
+    revalidatePath("/projects");
+    revalidatePath("/projects/live");
+    return { success: true };
+  } catch (error) {
+    console.error("Error toggling project live status:", error);
+    return {
+      error: "Failed to update project status",
+      success: false,
+    };
+  }
+}
+
+export async function getProjects() {
+  try {
+    const allProjects = await db.select().from(projects);
+    return allProjects;
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    return [];
+  }
+}

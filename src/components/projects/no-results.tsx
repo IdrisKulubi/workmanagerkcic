@@ -21,7 +21,7 @@ export function NoResults() {
         transition={{ delay: 0.3 }}
         className="text-2xl font-semibold mb-2"
       >
-        No Projects Found
+        No Bds Found
       </motion.h3>
       <motion.p
         initial={{ opacity: 0 }}

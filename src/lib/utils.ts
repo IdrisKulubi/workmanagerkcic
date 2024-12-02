@@ -25,3 +25,7 @@ export function isWithinBudgetRange(budget: number, range: string): boolean {
   const [min, max] = range.split("-").map(Number);
   return budget >= min && budget <= max;
 }
+
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+}

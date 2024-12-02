@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import { getCurrentUser } from "../auth";
 import { users } from "../../../db/schema";
 import db from "../../../db/drizzle";
+import { hashPassword } from "../password-utils";
+const DEFAULT_PASSWORD = process.env.DEFAULT_PASSWORD||'';
 
 export async function addEmployee(data: {
   name: string;
@@ -17,10 +19,15 @@ export async function addEmployee(data: {
   if (currentUser?.role !== "admin") {
     throw new Error("Unauthorized");
   }
+  const hashedPassword = await hashPassword(DEFAULT_PASSWORD);
 
   await db.insert(users).values({
     id: `usr_${Date.now()}`,
     ...data,
+    password: hashedPassword,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    passwordLastChanged: new Date(),
   });
 
   revalidatePath("/dashboard");
