@@ -14,6 +14,7 @@ import {
 import { ProjectActions } from "@/components/shared/project-actions-menu";
 import { Project } from "../../../../db/schema";
 import { keyframes } from "@emotion/react";
+import { Tooltip, TooltipContent,  TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface LiveProjectsGridProps {
   projects: Project[];
@@ -130,7 +131,18 @@ export function LiveProjectsGrid({
                       }}
                       transition={{ type: "spring", stiffness: 100 }}
                     >
-                      {project.projectName}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <span className="truncate block max-w-[300px]">
+                              {project.projectName}
+                        </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {project.projectName}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                     </motion.span>
                     <div className="flex items-center gap-2">
                       <motion.div
