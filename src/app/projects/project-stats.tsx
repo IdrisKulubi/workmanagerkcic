@@ -135,7 +135,7 @@ export function ProjectStats({ projects }: ProjectStatsProps) {
                   onClick={() => setSelectedProject(project)}
                 >
                   <div className="flex flex-col">
-                    <span className="font-medium">{project.projectName}</span>
+                    <span className="font-medium">{project.projectName.length > 30 ? `${project.projectName.slice(0, 30)}...` : project.projectName}</span>
                     <span className="text-sm text-muted-foreground">
                       {project.department}
                     </span>
