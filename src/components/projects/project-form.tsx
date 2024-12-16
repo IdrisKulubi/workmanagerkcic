@@ -25,7 +25,7 @@ import { addProject, updateProject } from "@/lib/actions/project-actions";
 import { projectSchema } from "@/lib/validator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import {  useTransition } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Project } from "../../../db/schema";
@@ -34,11 +34,12 @@ import { PreparationLevel } from "@/lib/validator";
 
 interface ProjectFormProps {
   project?: Project;
+  mode?: "create" | "update";
 }
 
-export function ProjectForm({ project }: ProjectFormProps) {
+export function ProjectForm({ project, mode = "create" }: ProjectFormProps) {
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const isEditing = !!project;
 
@@ -70,44 +71,70 @@ export function ProjectForm({ project }: ProjectFormProps) {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof projectSchema>) => {
-    setIsSubmitting(true);
-    try {
+  const onSubmit = (data: z.infer<typeof projectSchema>) => {
+    startTransition(async () => {
       let result;
       if (isEditing) {
-        result = await updateProject(project.id, values);
+        result = await updateProject(project.id, data);
       } else {
-        const valuesWithId = { ...values, id: crypto.randomUUID() };
+        const valuesWithId = { ...data, id: crypto.randomUUID() };
         result = await addProject(valuesWithId);
       }
-
       if (result.success) {
         toast({
-          title: `Project ${isEditing ? 'updated' : 'created'} successfully`,
-          description: result.message,
-          duration: 3000,
+          title: result.message,
+          description: "You'll be redirected to the projects page.",
+          
         });
+        
         setTimeout(() => {
           router.push("/projects");
           router.refresh();
         }, 1000);
       } else {
-        toast({
-          title: `Failed to ${isEditing ? 'update' : 'create'} project`,
-          description: result.error,
-          duration: 4000,
-        });
+        // Handle different error types
+        switch (result.code) {
+          case 'VALIDATION_ERROR':
+            result.validationErrors?.forEach(error => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              form.setError(error.field as any, {
+                message: error.message
+              });
+              toast({
+                variant: "destructive",
+                title: error.field,
+                description: error.message
+              });
+            });
+            break;
+          case 'UNAUTHORIZED':
+            toast({
+              variant: "destructive",
+              title: "Access Denied",
+              description: result.error,
+            });
+            break;
+
+          case 'DUPLICATE_NAME':
+            form.setError('projectName', {
+              message: 'A project with this name already exists'
+            });
+            toast({
+              variant: "destructive",
+              title: "Project name already exists",
+              description: "Please choose a different name.",
+            });
+            break;
+
+          default:
+            toast({
+              variant: "destructive",
+              title: "Operation Failed",
+              description: result.error || "An unexpected error occurred",
+            });
+        }
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      toast({
-        title: `An error occurred while ${isEditing ? 'updating' : 'creating'} the project`,
-        description: "Please try again later",
-        duration: 4000,
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    });
   };
 
   return (
@@ -556,22 +583,22 @@ export function ProjectForm({ project }: ProjectFormProps) {
             type="button" 
             variant="outline" 
             onClick={() => router.back()}
-            disabled={isSubmitting}
+            disabled={isPending}
           >
             Cancel
           </Button>
           <Button 
             type="submit" 
-            disabled={isSubmitting}
+            disabled={isPending}
             className="min-w-[100px]"
           >
-            {isSubmitting ? (
+            {isPending ? (
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                {isEditing ? 'Updating...' : 'Creating...'}
+                {mode === "create" ? "Creating..." : "Updating..."}
               </div>
             ) : (
-              isEditing ? 'Update Project' : 'Create Project'
+              <>{mode === "create" ? "Create Project" : "Update Project"}</>
             )}
           </Button>
         </div>
