@@ -14,7 +14,7 @@ interface ProjectsTableProps {
   };
 }
 
-export function ProjectsTable({ projects, currentUser }: ProjectsTableProps) {
+export function ProjectsTable({ projects}: ProjectsTableProps) {
   return (
     <div className="space-y-4">
       <DataTable columns={columns} data={projects} />
