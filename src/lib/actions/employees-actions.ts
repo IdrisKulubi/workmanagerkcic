@@ -5,8 +5,7 @@ import { eq } from "drizzle-orm";
 import { getCurrentUser } from "../auth";
 import { users } from "../../../db/schema";
 import db from "../../../db/drizzle";
-import { hashPassword } from "../password-utils";
-const DEFAULT_PASSWORD = process.env.DEFAULT_PASSWORD||'';
+import { DEFAULT_PASSWORD, hashPassword } from "../password-utils";
 
 export async function addEmployee(data: {
   name: string;
@@ -15,22 +14,29 @@ export async function addEmployee(data: {
   title: string;
   role: string;
 }) {
-  const currentUser = await getCurrentUser();
-  if (currentUser?.role !== "admin") {
-    throw new Error("Unauthorized");
+  try {
+    const currentUser = await getCurrentUser();
+    if (currentUser?.role !== "admin") {
+      throw new Error("Unauthorized");
+    }
+
+    const hashedPassword = await hashPassword(DEFAULT_PASSWORD);
+
+    await db.insert(users).values({
+      id: `usr_${Date.now()}`,
+      ...data,
+      password: hashedPassword,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      passwordLastChanged: new Date(),
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Error adding employee:", error);
+    throw error;
   }
-  const hashedPassword = await hashPassword(DEFAULT_PASSWORD);
-
-  await db.insert(users).values({
-    id: `usr_${Date.now()}`,
-    ...data,
-    password: hashedPassword,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    passwordLastChanged: new Date(),
-  });
-
-  revalidatePath("/dashboard");
 }
 
 export async function deleteEmployee(id: string) {

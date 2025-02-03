@@ -1,4 +1,4 @@
-import { hash, compare } from "bcryptjs";
+import bcrypt from "bcrypt";
 
 export const PASSWORD_REQUIREMENTS = {
   minLength: 8,
@@ -53,28 +53,14 @@ function getStrengthMessage(score: number): string {
   return "🎮 Let's create a strong password together";
 }
 
-export async function hashPassword(password: string): Promise<string> {
-  return hash(password, 12);
+export const DEFAULT_PASSWORD = "Kcic@34";
+
+export async function hashPassword(password: string) {
+  return bcrypt.hash(password, 10);
 }
 
-export async function verifyPassword(
-  plainPassword: string,
-  hashedPassword: string
-): Promise<boolean> {
-  try {
-    // Add logging to debug
-    console.log("Verifying password...");
-    console.log("Plain password length:", plainPassword.length);
-    console.log("Hashed password length:", hashedPassword.length);
-    
-    const isValid = await compare(plainPassword, hashedPassword);
-    console.log("Password verification result:", isValid);
-    
-    return isValid;
-  } catch (error) {
-    console.error("Error verifying password:", error);
-    return false;
-  }
+export async function verifyPassword(password: string, hashedPassword: string) {
+  return bcrypt.compare(password, hashedPassword);
 }
 
 export function isPasswordExpired(lastChanged: Date): boolean {

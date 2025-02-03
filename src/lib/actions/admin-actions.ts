@@ -5,9 +5,7 @@ import { eq, sql } from "drizzle-orm";
 import { getCurrentUser } from "../auth";
 import { users, projects } from "../../../db/schema";
 import db from "../../../db/drizzle";
-import { hashPassword } from "../password-utils";
-
-const DEFAULT_PASSWORD = process.env.DEFAULT_PASSWORD || "";
+import { DEFAULT_PASSWORD, hashPassword } from "../password-utils";
 
 export async function getEmployeeStats() {
   try {
@@ -15,7 +13,7 @@ export async function getEmployeeStats() {
     const totalEmployees = await db
       .select({ count: sql<number>`count(*)` })
       .from(users)
-      .then(result => result[0]?.count || 0);
+      .then((result) => result[0]?.count || 0);
 
     // Get department stats
     const departmentStats = await db
@@ -25,10 +23,12 @@ export async function getEmployeeStats() {
       })
       .from(users)
       .groupBy(users.department)
-      .then(results => results.map(r => ({
-        department: r.department,
-        count: Number(r.count)
-      })));
+      .then((results) =>
+        results.map((r) => ({
+          department: r.department,
+          count: Number(r.count),
+        }))
+      );
 
     // Get role distribution
     const roleDistribution = await db
@@ -38,10 +38,12 @@ export async function getEmployeeStats() {
       })
       .from(users)
       .groupBy(users.role)
-      .then(results => results.map(r => ({
-        role: r.role,
-        count: Number(r.count)
-      })));
+      .then((results) =>
+        results.map((r) => ({
+          role: r.role,
+          count: Number(r.count),
+        }))
+      );
 
     // Get project success trends by month
     const projectTrends = await db
@@ -53,10 +55,15 @@ export async function getEmployeeStats() {
       .from(projects)
       .groupBy(sql`date_trunc('month', created_at)`)
       .orderBy(sql`date_trunc('month', created_at)`)
-      .then(results => results.map(r => ({
-        name: new Date(r.name).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
-        value: Number(r.value?.toFixed(1)) || 0
-      })));
+      .then((results) =>
+        results.map((r) => ({
+          name: new Date(r.name).toLocaleDateString("en-US", {
+            month: "short",
+            year: "2-digit",
+          }),
+          value: Number(r.value?.toFixed(1)) || 0,
+        }))
+      );
 
     return {
       totalEmployees,
@@ -64,17 +71,17 @@ export async function getEmployeeStats() {
       roleDistribution,
       revenueData: projectTrends,
       growthRate: 15.5,
-      employeeGrowth: 8.2
+      employeeGrowth: 8.2,
     };
   } catch (error) {
-    console.error('Error fetching employee stats:', error);
+    console.error("Error fetching employee stats:", error);
     return {
       totalEmployees: 0,
       departmentStats: [],
       roleDistribution: [],
       revenueData: [],
       growthRate: 0,
-      employeeGrowth: 0
+      employeeGrowth: 0,
     };
   }
 }
@@ -136,6 +143,8 @@ export async function addEmployee(data: {
       ...data,
       password: hashedPassword,
       passwordLastChanged: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     revalidatePath("/admin");
@@ -162,9 +171,8 @@ export async function forceAllPasswordReset() {
     throw new Error("Unauthorized");
   }
 
-  
   const twoWeeksAgo = new Date();
-  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 15); 
+  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 15);
   await db
     .update(users)
     .set({
@@ -190,15 +198,17 @@ export async function getDonorStats() {
       .groupBy(projects.donor)
       .orderBy(sql`sum(cast(budget as numeric)) desc`);
 
-    return donorStats.map(donor => ({
+    return donorStats.map((donor) => ({
       name: donor.donor,
       totalProjects: Number(donor.totalProjects),
       wonProjects: Number(donor.wonProjects),
       totalBudget: Number(donor.totalBudget || 0),
-      successRate: donor.wonProjects ? (Number(donor.wonProjects) / Number(donor.totalProjects)) * 100 : 0
+      successRate: donor.wonProjects
+        ? (Number(donor.wonProjects) / Number(donor.totalProjects)) * 100
+        : 0,
     }));
   } catch (error) {
-    console.error('Error fetching donor stats:', error);
+    console.error("Error fetching donor stats:", error);
     return [];
   }
 }
