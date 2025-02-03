@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/form";
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "../ui/card";
-import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
   calculatePasswordStrength,
@@ -27,6 +26,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { updatePassword } from "@/lib/actions/password-actions";
+import { Button } from "../ui/button";
 
 interface ProfileFormProps {
   user: User;

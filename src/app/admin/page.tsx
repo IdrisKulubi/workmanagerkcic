@@ -1,16 +1,11 @@
 import { Navbar } from "@/components/shared/navbar";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Metadata } from "next";
 import { AdminDashboard } from "@/components/admin/admin-dashboard";
 import { getDonorStats } from "@/lib/actions/admin-actions";
 import { DonorShowcase } from "@/components/admin/donor-showcase";
 import { getAllProjects } from "@/lib/actions/project-actions";
 
-export const metadata: Metadata = {
-  title: "Admin Dashboard",
-  description: "KCIC Admin Dashboard",
-};
 
 export default async function AdminPage() {
   const user = await getCurrentUser();

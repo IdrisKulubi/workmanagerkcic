@@ -5,11 +5,11 @@ import {
   hashPassword,
   verifyPassword,
 } from "../src/lib/server/password-server";
-import { DEFAULT_PASSWORD } from "../src/lib/constants";
+import { getDefaultPassword } from "../src/lib/utils/password-config";
 
 async function verifyAndResetUser() {
   const email = "prudence.muriithi@kcicconsulting.com";
-  const defaultPassword = DEFAULT_PASSWORD;
+  const defaultPassword = getDefaultPassword();
 
   try {
     // 1. Find the user

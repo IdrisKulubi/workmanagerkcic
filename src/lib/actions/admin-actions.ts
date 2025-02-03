@@ -5,7 +5,8 @@ import { eq, sql } from "drizzle-orm";
 import { getCurrentUser } from "../auth";
 import { users, projects } from "../../../db/schema";
 import db from "../../../db/drizzle";
-import { hashPassword, DEFAULT_PASSWORD } from "../server/password-server";
+import { hashPassword } from "../server/password-server";
+import { DEFAULT_PASSWORD } from "../constants";
 
 export async function getEmployeeStats() {
   try {
@@ -186,17 +187,18 @@ export async function forceAllPasswordReset() {
 
 export async function getDonorStats() {
   try {
-    // Get all unique donors and their project stats
     const donorStats = await db
       .select({
         donor: projects.donor,
         totalProjects: sql<number>`count(*)`,
         wonProjects: sql<number>`count(case when status = 'won' then 1 end)`,
-        totalBudget: sql<number>`sum(cast(budget as numeric))`,
+        totalBudget: sql<number>`sum(case when budget != '' then cast(budget as numeric) else 0 end)`,
       })
       .from(projects)
       .groupBy(projects.donor)
-      .orderBy(sql`sum(cast(budget as numeric)) desc`);
+      .orderBy(
+        sql`sum(case when budget != '' then cast(budget as numeric) else 0 end) desc`
+      );
 
     return donorStats.map((donor) => ({
       name: donor.donor,
