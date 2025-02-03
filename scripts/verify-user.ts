@@ -1,8 +1,11 @@
 import db from "../db/drizzle";
 import { users } from "../db/schema";
 import { eq } from "drizzle-orm";
-import bcrypt from "bcrypt";
-import { DEFAULT_PASSWORD } from "../src/lib/password-utils";
+import {
+  hashPassword,
+  verifyPassword,
+} from "../src/lib/server/password-server";
+import { DEFAULT_PASSWORD } from "../src/lib/constants";
 
 async function verifyAndResetUser() {
   const email = "prudence.muriithi@kcicconsulting.com";
@@ -26,7 +29,7 @@ async function verifyAndResetUser() {
     });
 
     // 2. Reset password
-    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+    const hashedPassword = await hashPassword(defaultPassword);
 
     await db
       .update(users)
@@ -43,7 +46,7 @@ async function verifyAndResetUser() {
     });
 
     // 4. Test password match
-    const passwordsMatch = await bcrypt.compare(
+    const passwordsMatch = await verifyPassword(
       defaultPassword,
       updatedUser!.password
     );

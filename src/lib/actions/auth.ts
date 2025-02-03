@@ -1,24 +1,30 @@
-'use server'
+"use server";
 
-import { cookies } from 'next/headers'
-import { eq } from 'drizzle-orm'
-import { users } from '../../../db/schema'
-import { verifyPassword } from '@/lib/password-utils'
-import db from '../../../db/drizzle'
+import { cookies } from "next/headers";
+import { eq } from "drizzle-orm";
+import { users } from "../../../db/schema";
+import { verifyPassword } from "../server/password-server";
+import db from "../../../db/drizzle";
 
-export async function signIn({ email, password }: { email: string; password: string }) {
+export async function signIn({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) {
   try {
     const user = await db.query.users.findFirst({
       where: eq(users.email, email),
-    })
+    });
 
     if (!user) {
-      return { success: false, error: 'Invalid credentials' }
+      return { success: false, error: "Invalid credentials" };
     }
 
     const isValid = await verifyPassword(password, user.password);
     if (!isValid) {
-      return { success: false, error: 'Invalid credentials' }
+      return { success: false, error: "Invalid credentials" };
     }
 
     // Create a session token
@@ -28,32 +34,33 @@ export async function signIn({ email, password }: { email: string; password: str
       role: user.role,
       name: user.name,
       department: user.department,
-      exp: Date.now() + 1000 * 60 * 60 * 24 * 7 // 7 days
+      exp: Date.now() + 1000 * 60 * 60 * 24 * 7, // 7 days
     };
 
     // Set the session cookie
-    (await
-      // Set the session cookie
-      cookies()).set('session', JSON.stringify(sessionData), {
+    (
+      await // Set the session cookie
+      cookies()
+    ).set("session", JSON.stringify(sessionData), {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
-      path: '/',
+      path: "/",
     });
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       user: {
         id: user.id,
         email: user.email,
         role: user.role,
         name: user.name,
-        department: user.department
-      }
+        department: user.department,
+      },
     };
   } catch (error) {
     console.error("Sign in error:", error);
-    return { success: false, error: 'An error occurred during sign in' }
+    return { success: false, error: "An error occurred during sign in" };
   }
-} 
+}

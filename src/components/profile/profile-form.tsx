@@ -15,7 +15,10 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { calculatePasswordStrength, PasswordStrength } from "@/lib/password-utils";
+import {
+  calculatePasswordStrength,
+  PasswordStrength,
+} from "@/lib/password-utils";
 import { User } from "../../../db/schema";
 import { PasswordStrengthIndicator } from "../auth/password-strength-indicator";
 import { useRouter } from "next/navigation";
@@ -34,21 +37,32 @@ const PASSWORD_REQUIREMENTS = {
   maxLength: 64,
 };
 
-const passwordSchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z
-    .string()
-    .min(PASSWORD_REQUIREMENTS.minLength, `Password must be at least ${PASSWORD_REQUIREMENTS.minLength} characters`)
-    .max(PASSWORD_REQUIREMENTS.maxLength, `Password must be less than ${PASSWORD_REQUIREMENTS.maxLength} characters`)
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number")
-    .regex(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character"),
-  confirmPassword: z.string()
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const passwordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z
+      .string()
+      .min(
+        PASSWORD_REQUIREMENTS.minLength,
+        `Password must be at least ${PASSWORD_REQUIREMENTS.minLength} characters`
+      )
+      .max(
+        PASSWORD_REQUIREMENTS.maxLength,
+        `Password must be less than ${PASSWORD_REQUIREMENTS.maxLength} characters`
+      )
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number")
+      .regex(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        "Password must contain at least one special character"
+      ),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export function ProfileForm({ user }: ProfileFormProps) {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -66,7 +80,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       newPassword: "",
       confirmPassword: "",
     },
-    resolver: zodResolver(passwordSchema)
+    resolver: zodResolver(passwordSchema),
   });
 
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({
@@ -78,13 +92,17 @@ export function ProfileForm({ user }: ProfileFormProps) {
       number: false,
       specialChar: false,
     },
-    message: "Let's create a strong password together"
+    message: "Let's create a strong password together",
   });
 
   const watchNewPassword = form.watch("newPassword");
   useEffect(() => {
     if (watchNewPassword) {
-      setPasswordStrength(calculatePasswordStrength(watchNewPassword));
+      const updateStrength = async () => {
+        const strength = await calculatePasswordStrength(watchNewPassword);
+        setPasswordStrength(strength);
+      };
+      updateStrength();
     }
   }, [watchNewPassword]);
 
@@ -117,10 +135,10 @@ export function ProfileForm({ user }: ProfileFormProps) {
         title: "Success",
         description: "Password updated successfully",
       });
-      
+
       form.reset();
       setIsSubmitting(false);
-      
+
       setTimeout(() => {
         router.refresh();
       }, 1500);
@@ -137,13 +155,13 @@ export function ProfileForm({ user }: ProfileFormProps) {
   };
 
   const cardVariants = {
-    hidden: { 
+    hidden: {
       opacity: 0,
       y: 20,
       rotateX: -15,
-      scale: 0.95
+      scale: 0.95,
     },
-    visible: { 
+    visible: {
       opacity: 1,
       y: 0,
       rotateX: 0,
@@ -151,47 +169,47 @@ export function ProfileForm({ user }: ProfileFormProps) {
       transition: {
         type: "spring",
         duration: 0.8,
-        bounce: 0.4
-      }
+        bounce: 0.4,
+      },
     },
     hover: {
       scale: 1.02,
       rotateX: 5,
       transition: {
         type: "spring",
-        duration: 0.4
-      }
-    }
+        duration: 0.4,
+      },
+    },
   };
 
   const formItemVariants = {
-    hidden: { 
+    hidden: {
       opacity: 0,
       x: -20,
-      rotateY: -10
+      rotateY: -10,
     },
-    visible: { 
+    visible: {
       opacity: 1,
       x: 0,
       rotateY: 0,
       transition: {
         type: "spring",
-        duration: 0.5
-      }
-    }
+        duration: 0.5,
+      },
+    },
   };
 
   const userInfoFields = [
     { id: "name", label: "Name", value: user.name },
     { id: "email", label: "Email", value: user.email },
     { id: "department", label: "Department", value: user.department },
-    { id: "role", label: "Role", value: user.role }
+    { id: "role", label: "Role", value: user.role },
   ];
 
   return (
     <div className="space-y-6 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900 dark:to-emerald-950 p-4 md:p-8 rounded-lg perspective-1000">
       <AnimatePresence mode="wait">
-        <motion.div 
+        <motion.div
           key="account-info"
           initial="hidden"
           animate="visible"
@@ -207,7 +225,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {userInfoFields.map((item, index) => (
-                    <motion.div 
+                    <motion.div
                       key={item.id}
                       variants={formItemVariants}
                       custom={index}
@@ -227,7 +245,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           </Card>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           key="password-form"
           initial="hidden"
           animate="visible"
@@ -243,7 +261,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     Change Password
                   </h2>
                   {passwordExpired && (
-                    <motion.span 
+                    <motion.span
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="text-sm text-red-500 dark:text-red-400 animate-pulse"
@@ -254,7 +272,10 @@ export function ProfileForm({ user }: ProfileFormProps) {
                 </div>
 
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4"
+                  >
                     <motion.div variants={formItemVariants}>
                       <FormField
                         control={form.control}
@@ -267,7 +288,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
                             <div className="relative">
                               <FormControl>
                                 <Input
-                                  type={showCurrentPassword ? "text" : "password"}
+                                  type={
+                                    showCurrentPassword ? "text" : "password"
+                                  }
                                   {...field}
                                   className="bg-green-50 dark:bg-green-900/50 border-green-300 dark:border-green-700 
                                            text-green-900 dark:text-green-100 focus:border-green-500 focus:ring-green-500
@@ -280,7 +303,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
                                 size="icon"
                                 className="absolute right-2 top-1/2 -translate-y-1/2 text-green-600 dark:text-green-400
                                          hover:text-green-800 dark:hover:text-green-200 transition-colors duration-300"
-                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                onClick={() =>
+                                  setShowCurrentPassword(!showCurrentPassword)
+                                }
                               >
                                 {showCurrentPassword ? (
                                   <EyeOff className="h-4 w-4" />
@@ -320,7 +345,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
                                   variant="ghost"
                                   size="icon"
                                   className="absolute right-2 top-1/2 -translate-y-1/2"
-                                  onClick={() => setShowNewPassword(!showNewPassword)}
+                                  onClick={() =>
+                                    setShowNewPassword(!showNewPassword)
+                                  }
                                 >
                                   {showNewPassword ? (
                                     <EyeOff className="h-4 w-4" />
@@ -329,28 +356,84 @@ export function ProfileForm({ user }: ProfileFormProps) {
                                   )}
                                 </Button>
                               </div>
-                              
+
                               {field.value && (
                                 <div className="space-y-2">
-                                  <PasswordStrengthIndicator strength={passwordStrength.score} />
-                                  
+                                  <PasswordStrengthIndicator
+                                    strength={passwordStrength.score}
+                                  />
+
                                   <div className="text-sm space-y-1">
-                                    <p className="text-muted-foreground">{passwordStrength.message}</p>
+                                    <p className="text-muted-foreground">
+                                      {passwordStrength.message}
+                                    </p>
                                     <ul className="space-y-1 text-sm">
-                                      <li className={`flex items-center gap-2 ${passwordStrength.requirements.minLength ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                        {passwordStrength.requirements.minLength ? '✓' : '×'} At least {PASSWORD_REQUIREMENTS.minLength} characters
+                                      <li
+                                        className={`flex items-center gap-2 ${
+                                          passwordStrength.requirements
+                                            .minLength
+                                            ? "text-green-600 dark:text-green-400"
+                                            : "text-red-600 dark:text-red-400"
+                                        }`}
+                                      >
+                                        {passwordStrength.requirements.minLength
+                                          ? "✓"
+                                          : "×"}{" "}
+                                        At least{" "}
+                                        {PASSWORD_REQUIREMENTS.minLength}{" "}
+                                        characters
                                       </li>
-                                      <li className={`flex items-center gap-2 ${passwordStrength.requirements.uppercase ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                        {passwordStrength.requirements.uppercase ? '✓' : '×'} One uppercase letter
+                                      <li
+                                        className={`flex items-center gap-2 ${
+                                          passwordStrength.requirements
+                                            .uppercase
+                                            ? "text-green-600 dark:text-green-400"
+                                            : "text-red-600 dark:text-red-400"
+                                        }`}
+                                      >
+                                        {passwordStrength.requirements.uppercase
+                                          ? "✓"
+                                          : "×"}{" "}
+                                        One uppercase letter
                                       </li>
-                                      <li className={`flex items-center gap-2 ${passwordStrength.requirements.lowercase ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                        {passwordStrength.requirements.lowercase ? '✓' : '×'} One lowercase letter
+                                      <li
+                                        className={`flex items-center gap-2 ${
+                                          passwordStrength.requirements
+                                            .lowercase
+                                            ? "text-green-600 dark:text-green-400"
+                                            : "text-red-600 dark:text-red-400"
+                                        }`}
+                                      >
+                                        {passwordStrength.requirements.lowercase
+                                          ? "✓"
+                                          : "×"}{" "}
+                                        One lowercase letter
                                       </li>
-                                      <li className={`flex items-center gap-2 ${passwordStrength.requirements.number ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                        {passwordStrength.requirements.number ? '✓' : '×'} One number
+                                      <li
+                                        className={`flex items-center gap-2 ${
+                                          passwordStrength.requirements.number
+                                            ? "text-green-600 dark:text-green-400"
+                                            : "text-red-600 dark:text-red-400"
+                                        }`}
+                                      >
+                                        {passwordStrength.requirements.number
+                                          ? "✓"
+                                          : "×"}{" "}
+                                        One number
                                       </li>
-                                      <li className={`flex items-center gap-2 ${passwordStrength.requirements.specialChar ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                        {passwordStrength.requirements.specialChar ? '✓' : '×'} One special character
+                                      <li
+                                        className={`flex items-center gap-2 ${
+                                          passwordStrength.requirements
+                                            .specialChar
+                                            ? "text-green-600 dark:text-green-400"
+                                            : "text-red-600 dark:text-red-400"
+                                        }`}
+                                      >
+                                        {passwordStrength.requirements
+                                          .specialChar
+                                          ? "✓"
+                                          : "×"}{" "}
+                                        One special character
                                       </li>
                                     </ul>
                                   </div>
@@ -375,7 +458,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
                             <div className="relative">
                               <FormControl>
                                 <Input
-                                  type={showConfirmPassword ? "text" : "password"}
+                                  type={
+                                    showConfirmPassword ? "text" : "password"
+                                  }
                                   {...field}
                                   className="bg-green-50 dark:bg-green-900/50 border-green-300 dark:border-green-700 
                                            text-green-900 dark:text-green-100 focus:border-green-500 focus:ring-green-500
@@ -388,7 +473,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
                                 size="icon"
                                 className="absolute right-2 top-1/2 -translate-y-1/2 text-green-600 dark:text-green-400
                                          hover:text-green-800 dark:hover:text-green-200 transition-colors duration-300"
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                onClick={() =>
+                                  setShowConfirmPassword(!showConfirmPassword)
+                                }
                               >
                                 {showConfirmPassword ? (
                                   <EyeOff className="h-4 w-4" />

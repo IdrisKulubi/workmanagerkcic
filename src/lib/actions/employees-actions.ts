@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { getCurrentUser } from "../auth";
 import { users } from "../../../db/schema";
 import db from "../../../db/drizzle";
-import { DEFAULT_PASSWORD, hashPassword } from "../password-utils";
+import { hashPassword, DEFAULT_PASSWORD } from "../server/password-server";
 
 export async function addEmployee(data: {
   name: string;
