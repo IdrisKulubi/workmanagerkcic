@@ -29,10 +29,9 @@ const statuses = [
 const departments = [
   { label: "All Departments", value: "" },
   { label: "BD", value: "BD" },
-    { label: "SAS", value: "SAS" },
-    { label: "PSD", value: "PSD" },
-    { label: "TD", value: "TD" },
-  
+  { label: "SAS", value: "SAS" },
+  { label: "PSD", value: "PSD" },
+  { label: "TD", value: "TD" },
 ];
 
 export function FilterMenu() {
@@ -49,11 +48,12 @@ export function FilterMenu() {
     } else {
       params.delete(key);
     }
-    router.push(`/projects?${params.toString()}`);
+    router.push(`/projects?${params.toString()}`, { scroll: false });
   };
 
   const getActiveFiltersCount = () => {
-    return [currentPriority, currentStatus, currentDepartment].filter(Boolean).length;
+    return [currentPriority, currentStatus, currentDepartment].filter(Boolean)
+      .length;
   };
 
   return (
@@ -79,9 +79,17 @@ export function FilterMenu() {
               className="grid gap-2"
             >
               {priorities.map((priority) => (
-                <div key={priority.value} className="flex items-center space-x-2">
-                  <RadioGroupItem value={priority.value} id={`priority-${priority.value}`} />
-                  <Label htmlFor={`priority-${priority.value}`}>{priority.label}</Label>
+                <div
+                  key={priority.value}
+                  className="flex items-center space-x-2"
+                >
+                  <RadioGroupItem
+                    value={priority.value}
+                    id={`priority-${priority.value}`}
+                  />
+                  <Label htmlFor={`priority-${priority.value}`}>
+                    {priority.label}
+                  </Label>
                 </div>
               ))}
             </RadioGroup>
@@ -98,8 +106,13 @@ export function FilterMenu() {
             >
               {statuses.map((status) => (
                 <div key={status.value} className="flex items-center space-x-2">
-                  <RadioGroupItem value={status.value} id={`status-${status.value}`} />
-                  <Label htmlFor={`status-${status.value}`}>{status.label}</Label>
+                  <RadioGroupItem
+                    value={status.value}
+                    id={`status-${status.value}`}
+                  />
+                  <Label htmlFor={`status-${status.value}`}>
+                    {status.label}
+                  </Label>
                 </div>
               ))}
             </RadioGroup>
@@ -116,7 +129,10 @@ export function FilterMenu() {
             >
               {departments.map((dept) => (
                 <div key={dept.value} className="flex items-center space-x-2">
-                  <RadioGroupItem value={dept.value} id={`dept-${dept.value}`} />
+                  <RadioGroupItem
+                    value={dept.value}
+                    id={`dept-${dept.value}`}
+                  />
                   <Label htmlFor={`dept-${dept.value}`}>{dept.label}</Label>
                 </div>
               ))}
@@ -126,4 +142,4 @@ export function FilterMenu() {
       </PopoverContent>
     </Popover>
   );
-} 
+}

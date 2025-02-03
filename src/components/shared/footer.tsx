@@ -25,7 +25,7 @@ const Footer = React.forwardRef<
               href="/"
               className="font-medium underline underline-offset-4"
             >
-              KCIC Consulting
+              IACL Consulting
             </Link>
             . All rights reserved.
           </p>

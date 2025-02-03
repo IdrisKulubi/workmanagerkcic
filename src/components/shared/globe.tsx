@@ -414,7 +414,7 @@ export function GlobeDemo() {
             Consulting for a Better World{" "}
           </h2>
           <p className="text-center text-base md:text-lg font-normal text-white drop-shadow max-w-md mt-2 mx-auto">
-            Connecting teams and delivering excellence worldwide with KCIC Bd
+            Connecting teams and delivering excellence worldwide with IACL Bd
             Manager
           </p>
         </motion.div>

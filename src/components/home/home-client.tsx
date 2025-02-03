@@ -39,7 +39,7 @@ export function HomeClient({ }: { projects: Project[] }) {
           transition={{ duration: 0.5 }}
           className="text-5xl md:text-7xl font-bold mb-6 text-yellow-300 drop-shadow-lg"
         >
-          KCIC Bd Manager
+          IACL Bd Manager
         </motion.h1>
         <main className="flex-1 py-12 px-4">
           
@@ -49,7 +49,7 @@ export function HomeClient({ }: { projects: Project[] }) {
               transition={{ delay: 0.2, duration: 0.5 }}
               className="text-xl md:text-2xl mb-8 text-white drop-shadow"
             >
-              Where work feels like play!
+              Where work feels like play
             </motion.p>
 
             <motion.div

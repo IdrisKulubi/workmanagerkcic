@@ -11,7 +11,6 @@ export function SearchBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isPending, startTransition] = useTransition();
   const debouncedValue = useDebounce(searchQuery, 300);
 
@@ -23,7 +22,7 @@ export function SearchBar() {
       params.delete("q");
     }
     startTransition(() => {
-      router.push(`/projects?${params.toString()}`);
+      router.push(`/projects?${params.toString()}`, { scroll: false });
     });
   }, [debouncedValue, router, searchParams]);
 
