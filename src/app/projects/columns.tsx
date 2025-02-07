@@ -67,7 +67,7 @@ export const columns: ColumnDef<Project>[] = [
       const project = row.original;
       return (
         <div className="flex justify-end">
-          <ProjectActions project={project} />
+          <ProjectActions project={project} userRole={row.original.userRole} />
         </div>
       );
     },
