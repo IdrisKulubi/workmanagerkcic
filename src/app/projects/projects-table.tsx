@@ -16,9 +16,9 @@ interface ProjectsTableProps {
 
 export function ProjectsTable({ projects, currentUser }: ProjectsTableProps) {
   // Add user role to each project for the actions menu
-  const projectsWithRole = projects.map(project => ({
+  const projectsWithRole = projects.map((project) => ({
     ...project,
-    userRole: currentUser.role
+    userRole: currentUser.role,
   }));
 
   return (
