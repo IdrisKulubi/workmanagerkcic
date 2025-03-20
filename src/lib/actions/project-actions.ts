@@ -22,16 +22,6 @@ function validateProjectData(data: Partial<NewProject>): ValidationError[] {
     });
   }
 
-  if (data.bidsDeadline) {
-    const deadline = new Date(data.bidsDeadline);
-    if (deadline < new Date()) {
-      errors.push({
-        field: 'bidsDeadline',
-        message: 'Deadline cannot be in the past'
-      });
-    }
-  }
-
   if (data.budget && (isNaN(Number(data.budget)) || Number(data.budget) <= 0)) {
     errors.push({
       field: 'budget',
