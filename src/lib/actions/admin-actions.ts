@@ -5,7 +5,7 @@ import { eq, sql } from "drizzle-orm";
 import { getCurrentUser } from "../auth";
 import { users, projects } from "../../../db/schema";
 import db from "../../../db/drizzle";
-import { hashPassword, DEFAULT_PASSWORD } from "../server/password-server";
+import { hashPassword, getDefaultPassword } from "../server/password-server";
 
 export async function getEmployeeStats() {
   try {
@@ -134,8 +134,11 @@ export async function addEmployee(data: {
       throw new Error("Email already exists");
     }
 
+    // Get the default password
+    const defaultPassword = await getDefaultPassword();
+    
     // Hash the default password
-    const hashedPassword = await hashPassword(DEFAULT_PASSWORD);
+    const hashedPassword = await hashPassword(defaultPassword);
 
     // Create new employee with default password
     await db.insert(users).values({

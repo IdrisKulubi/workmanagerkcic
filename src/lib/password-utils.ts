@@ -1,15 +1,4 @@
-"use server";
-
-import bcrypt from "bcrypt";
-
-export const PASSWORD_REQUIREMENTS = {
-  minLength: 8,
-  maxLength: 128,
-  requireUppercase: true,
-  requireLowercase: true,
-  requireNumbers: true,
-  requireSpecialChars: true,
-};
+import { PASSWORD_REQUIREMENTS } from './constants';
 
 export interface PasswordStrength {
   score: number; // 0-100
@@ -23,13 +12,12 @@ export interface PasswordStrength {
   message: string;
 }
 
-export async function calculatePasswordStrength(password: string): Promise<PasswordStrength> {
+export function calculatePasswordStrength(password: string): PasswordStrength {
   const requirements = {
     minLength: password.length >= PASSWORD_REQUIREMENTS.minLength,
     uppercase: /[A-Z]/.test(password),
     lowercase: /[a-z]/.test(password),
     number: /\d/.test(password),
-
     specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
   };
 
@@ -56,19 +44,7 @@ function getStrengthMessage(score: number): string {
   return "🎮 Let's create a strong password together";
 }
 
-export async function getDefaultPassword() {
-  return "Kcic@34";
-}
-
-export async function hashPassword(password: string) {
-  return bcrypt.hash(password, 10);
-}
-
-export async function verifyPassword(password: string, hashedPassword: string) {
-  return bcrypt.compare(password, hashedPassword);
-}
-
-export async function isPasswordExpired(lastChanged: Date): Promise<boolean> {
+export function isPasswordExpired(lastChanged: Date): boolean {
   const expirationDays = 14;
   const now = new Date();
   const diffTime = Math.abs(now.getTime() - lastChanged.getTime());

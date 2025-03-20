@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { getCurrentUser } from "../auth";
 import { users } from "../../../db/schema";
 import db from "../../../db/drizzle";
-import { hashPassword, DEFAULT_PASSWORD } from "../server/password-server";
+import { hashPassword, getDefaultPassword } from "../server/password-server";
 
 export async function addEmployee(data: {
   name: string;
@@ -20,7 +20,8 @@ export async function addEmployee(data: {
       throw new Error("Unauthorized");
     }
 
-    const hashedPassword = await hashPassword(DEFAULT_PASSWORD);
+    const defaultPassword = await getDefaultPassword();
+    const hashedPassword = await hashPassword(defaultPassword);
 
     await db.insert(users).values({
       id: `usr_${Date.now()}`,

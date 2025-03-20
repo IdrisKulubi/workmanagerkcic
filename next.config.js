@@ -1,6 +1,7 @@
-import type { NextConfig } from "next";
+// @ts-check
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
@@ -23,5 +24,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-
-export default nextConfig;
+module.exports = nextConfig; 
